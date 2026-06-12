@@ -26,33 +26,32 @@ function startMusic() {
 /* =========================
    ICON
 ========================= */
-if (music) {
+music?.addEventListener("play", () => {
+    musicBtn?.classList.add("playing");
+    musicIcon?.classList.replace("fa-music", "fa-volume-high");
+});
 
-    music.addEventListener("play", () => {
-        musicBtn?.classList.add("playing");
-
-        musicIcon?.classList.replace("fa-music", "fa-volume-high");
-    });
-
-    music.addEventListener("pause", () => {
-        musicBtn?.classList.remove("playing");
-
-        musicIcon?.classList.replace("fa-volume-high", "fa-music");
-    });
-}
+music?.addEventListener("pause", () => {
+    musicBtn?.classList.remove("playing");
+    musicIcon?.classList.replace("fa-volume-high", "fa-music");
+});
 
 /* =========================
-   VIDEO FIX (iOS + Android SAFE)
+   VIDEO FIX (SAFE MODE)
 ========================= */
 if (introVideo) {
 
     introVideo.muted = true;
+    introVideo.playsInline = true;
     introVideo.setAttribute("playsinline", "");
     introVideo.setAttribute("webkit-playsinline", "");
+
+    // 🔥 مهم جدًا iPhone
+    introVideo.preload = "auto";
 }
 
 /* =========================
-   START (FIXED FOR iPhone)
+   START (FIXED iOS VERSION)
 ========================= */
 document.addEventListener("click", async () => {
 
@@ -61,16 +60,10 @@ document.addEventListener("click", async () => {
     startMusic();
 
     try {
-        // 🔥 مهم جدًا iOS
-        introVideo.load();
 
-        await new Promise(resolve => {
-            if (introVideo.readyState >= 2) return resolve();
-
-            introVideo.addEventListener("loadeddata", resolve, { once: true });
-        });
-
-        introVideo.currentTime = 0;
+        // ❌ مفيش load() (ده اللي كان بيكسر iPhone)
+        
+        introVideo.currentTime = 0.01;
 
         const playPromise = introVideo.play();
 
@@ -96,7 +89,7 @@ introVideo?.addEventListener("ended", () => {
 
     setTimeout(() => {
 
-        if (intro) intro.style.display = "none";
+        intro && (intro.style.display = "none");
 
         main.style.display = "block";
 
